@@ -82,8 +82,8 @@ async function parseNaturalLanguageSearch(query) {
     return { city: null, minPrice: null, maxPrice: null, category: null, keywords: null };
   }
 
-  // 1. Try Gemini API if key is present
-  if (process.env.GEMINI_API_KEY) {
+  // 1. Try Gemini API if valid AI Studio key is present
+  if (hasValidGeminiKey()) {
     try {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
@@ -173,8 +173,8 @@ async function generatePilgrimChatResponse(message, history = []) {
     return "FairStay is engineered and handcrafted with ❤️ by Vipin Gautam and team for pilgrims across India's holy corridors.";
   }
 
-  // 2. Try Google Gemini API if key is available
-  if (process.env.GEMINI_API_KEY) {
+  // 2. Try Google Gemini API if valid AI Studio key is available
+  if (hasValidGeminiKey()) {
     try {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({
@@ -267,8 +267,8 @@ async function predictFestivalPriceAI({ listing = null, destination = 'Goa', fes
   const destinationName = baselineFestival.destination || destination || 'Leisure Destination';
   const cityEvents = baselineFestival.availableEvents || getDestinationEvents(listing || destination);
 
-  // 2. Query Google Gemini AI for contextual real-time analysis
-  if (process.env.GEMINI_API_KEY) {
+  // 2. Query Google Gemini AI for contextual real-time analysis if valid key
+  if (hasValidGeminiKey()) {
     try {
       const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
       const model = genAI.getGenerativeModel({ model: 'gemini-1.5-flash' });
