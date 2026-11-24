@@ -1,28 +1,18 @@
-/**
- * ============================================================================
- * 🏨 FAIRSTAY SERVER ENGINE (The "Front Desk & General Manager")
- * ============================================================================
- * What this file does (in plain English):
- * 1. Boots up the web server on port 8080 (or your cloud port).
- * 2. Connects to our secure MongoDB database vault holding all listings and users.
- * 3. Handles guest security, logins, and session memory.
- * 4. Routes customer requests to the right service counters (API, stays, bookings).
- * 5. Serves the modern React frontend application to visitors' browsers.
- * ============================================================================
- */
 
 if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config();
 }
 
-const dns = require('dns');
-// Use reliable public DNS resolvers to ensure MongoDB Atlas SRV lookups succeed on all Windows ISPs
-try {
-  dns.setServers(['8.8.8.8', '1.1.1.1']);
-} catch (e) {}
+process.on('unhandledRejection', (reason) => {
+  console.warn('⚠️ Unhandled Rejection:', reason?.message || reason);
+});
+process.on('uncaughtException', (err) => {
+  console.warn('⚠️ Uncaught Exception:', err?.message || err);
+});
 
 const express = require('express');
 const app = express();
+app.set('trust proxy', 1);
 const mongoose = require('mongoose');
 const path = require('path');
 const fs = require('fs');
@@ -50,17 +40,22 @@ const rateLimit = require('express-rate-limit');
 
 const dbUrl = process.env.ATLAS_URI || process.env.MONGO_URL || 'mongodb://127.0.0.1:27017/fairstay';
 
+mongoose.connection.on('error', (err) => {
+  console.warn('⚠️ Mongoose connection event warning:', err.message || err);
+});
+
 // Connect to MongoDB with automatic fallback
 main();
 
 async function main() {
   if (dbUrl.startsWith('mongodb+srv://') || dbUrl.includes('@')) {
     try {
-      await mongoose.connect(dbUrl, { serverSelectionTimeoutMS: 8000 });
+      await mongoose.connect(dbUrl, { serverSelectionTimeoutMS: 5000 });
       console.log('✅ Connected to MongoDB Atlas Cloud successfully.');
       return;
     } catch (err) {
       console.warn('⚠️ MongoDB Atlas connection error. Falling back to local MongoDB:', err.message);
+      await mongoose.disconnect().catch(() => {});
     }
   }
 
@@ -88,23 +83,42 @@ app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'frontend', 'public')));
 app.use(express.static(path.join(__dirname, 'client', 'dist')));
 
-// Rate limiting — 150 requests per 15 min per IP on API routes
+// Rate limiting — with resilient key generator to prevent ERR_ERL_UNDEFINED_IP_ADDRESS
+const resolveClientIp = (req) =>
+  req.ip ||
+  req.headers['x-forwarded-for'] ||
+  req.socket?.remoteAddress ||
+  req.connection?.remoteAddress ||
+  '127.0.0.1';
+
 const apiLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 150,
   standardHeaders: true,
   legacyHeaders: false,
+  validate: { xForwardedForHeader: false, default: false },
+  keyGenerator: resolveClientIp,
   message: { success: false, error: 'Too many requests. Please try again after 15 minutes.' },
 });
 
-// Mongo Session Store using the primary database
+const aiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 30,
+  standardHeaders: true,
+  legacyHeaders: false,
+  validate: { xForwardedForHeader: false, default: false },
+  keyGenerator: resolveClientIp,
+  message: { success: false, error: 'Too many AI concierge requests. Please wait a minute.' },
+});
+
+// Mongo Session Store using the connected Mongoose client (fallback-aware)
 const store = MongoStore.create({
-  mongoUrl: dbUrl,
+  clientPromise: mongoose.connection.asPromise().then(() => mongoose.connection.getClient()),
   touchAfter: 24 * 3600,
 });
 
 store.on('error', (err) => {
-  console.log('❌ Mongo Session Store Error:', err);
+  console.log('⚠️ Mongo Session Store:', err.message || err);
 });
 
 const sessionConfig = {
@@ -213,7 +227,7 @@ app.use('/listings', listingRouter);
 app.use('/listings/:id/reviews', reviewRouter);
 app.use('/', bookingRouter);
 app.use('/', userRouter);
-app.use('/ai', aiLimiter = rateLimit({ windowMs: 60 * 1000, max: 30 }), aiRouter);
+app.use('/ai', aiLimiter, aiRouter);
 app.use('/api', apiLimiter, apiRouter);
 
 // GET /api/me — Return session user for React SPA auth awareness

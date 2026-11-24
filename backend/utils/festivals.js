@@ -1,22 +1,4 @@
-/**
- * FairStay — City-Centric AI Seasonal & Event Pricing Engine
- * 
- * Rules:
- * 1. Pan-India Festivals (e.g. Christmas Dec 20–26, New Year Dec 27–Jan 2) apply nationwide.
- * 2. Pure Leisure Tourist Destinations (Manali, Goa, Shimla):
- *    - DO NOT surge for traditional religious holidays like Diwali, Janmashtami, Ganpati, etc.
- *    - They maintain standard direct baseline rates (0% markup) with transparent explanations.
- *    - They surge for tourism-driven events: White Christmas, Sunburn/NYE, Winter Snow Carnival, Summer Escapes.
- * 3. Regional / City-Specific Festivals:
- *    - Janmashtami: Only surges in Mathura/Vrindavan (+40%) and Prayagraj (+30%). Everywhere else: 0% markup.
- *    - Ganpati Mahotsav (Ganesh Chaturthi): Only surges in Maharashtra/Mumbai (+30%). Everywhere else: 0% markup.
- *    - Dev Deepawali: Only in Varanasi (+40%).
- *    - International Yoga Festival: Only in Rishikesh (+25%).
- *    - Magh Mela / Kumbh: Only in Prayagraj (+40%).
- *    - Jaipur Literature Festival (JLF): Only in Jaipur (+35%).
- * 4. Off-Peak Seasonal Discounts:
- *    - Jaipur summer (-30%), Goa monsoon (-25%), Manali monsoon (-35%), Kerala monsoon (-20%).
- */
+
 
 // City-Specific Event & Seasonal Calendars
 const DESTINATION_CALENDARS = {

@@ -1,5 +1,10 @@
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
+function hasValidGeminiKey() {
+  const key = (process.env.GEMINI_API_KEY || '').trim();
+  return Boolean(key && key.startsWith('AIzaSy') && key.length > 20);
+}
+
 const TRAVEL_SYSTEM_PROMPT = `
 You are the FairStay AI Travel Concierge & Trip Planner, an intelligent, friendly, and deeply knowledgeable travel assistant for travelers booking homes, villas, cabins, and unique stays across India and world-class vacation destinations:
 1. Beachfront & Coastal: Goa (Baga, Candolim, Anjuna, Palolem), Gokarna, Alibaug, Varkala

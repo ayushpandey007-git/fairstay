@@ -171,7 +171,3 @@ To verify that all 82 subsystems and price algorithms are running perfectly:
 ```bash
 npm test
 ```
-*(Runs the automated test runner with 100% pass rate)*
-
----
-*Created with ❤️ by the FairStay engineering team for travelers across India.*
