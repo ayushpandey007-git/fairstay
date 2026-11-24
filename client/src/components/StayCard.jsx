@@ -63,7 +63,23 @@ export default function StayCard({ listing, showTax }) {
     ? (listing.reviews.reduce((acc, r) => acc + (r.rating || 5), 0) / listing.reviews.length).toFixed(1)
     : '4.95';
 
-  const imageUrl = listing.image?.url || 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80';
+  let imageUrl = listing.image?.url;
+  if (!imageUrl || imageUrl.includes('maps.googleapis.com')) {
+    const loc = ((listing.location || '') + ' ' + (listing.title || '')).toLowerCase();
+    if (loc.includes('varanasi') || loc.includes('kashi') || loc.includes('ghat')) {
+      imageUrl = 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&w=800&q=80';
+    } else if (loc.includes('prayagraj') || loc.includes('haridwar') || loc.includes('ayodhya') || loc.includes('mathura')) {
+      imageUrl = 'https://images.unsplash.com/photo-1571536802807-30451e3955d8?auto=format&fit=crop&w=800&q=80';
+    } else if (loc.includes('rishikesh')) {
+      imageUrl = 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?auto=format&fit=crop&w=800&q=80';
+    } else if (loc.includes('goa')) {
+      imageUrl = 'https://images.unsplash.com/photo-1512343879784-a960bf40e7f2?auto=format&fit=crop&w=800&q=80';
+    } else if (loc.includes('manali')) {
+      imageUrl = 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=800&q=80';
+    } else {
+      imageUrl = 'https://images.unsplash.com/photo-1590050752117-238cb0fb12b1?auto=format&fit=crop&w=800&q=80';
+    }
+  }
 
   const handleCardClick = (e) => {
     // Avoid double navigation if clicking interactive child button
