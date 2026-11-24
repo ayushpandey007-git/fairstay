@@ -10,6 +10,11 @@ process.on('uncaughtException', (err) => {
   console.warn('⚠️ Uncaught Exception:', err?.message || err);
 });
 
+const dns = require('dns');
+try {
+  dns.setServers(['8.8.8.8', '1.1.1.1']);
+} catch (e) {}
+
 const express = require('express');
 const app = express();
 app.set('trust proxy', 1);
