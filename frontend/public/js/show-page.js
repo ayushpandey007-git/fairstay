@@ -43,10 +43,11 @@
       scrollWheelZoom: false,
     }).setView([lat, lon], 14);
 
-    // OpenStreetMap standard tile layer
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-      maxZoom: 19,
+    // CARTO Voyager CDN tile layer (Reliable, fast, no 403 blocks)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      maxZoom: 20,
+      subdomains: 'abcd',
     }).addTo(map);
 
     // Modern Airbnb Coral Marker Pin
