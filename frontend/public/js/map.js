@@ -138,11 +138,10 @@
         scrollWheelZoom: true,
       }).setView(center, zoom);
 
-      // Primary: Clean CARTO Voyager CDN Tile Layer (No 403 blocks)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        maxZoom: 20,
-        subdomains: 'abcd',
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+      // Primary: Esri WorldStreetMap Tile Layer (No API Key Required, No 403 blocks)
+      L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+        maxZoom: 18,
+        attribution: '&copy; <a href="https://www.esri.com/">Esri</a>, OpenStreetMap contributors',
       }).addTo(map);
 
       const markersCoords = [];

@@ -43,11 +43,10 @@
       scrollWheelZoom: false,
     }).setView([lat, lon], 14);
 
-    // CARTO Voyager CDN tile layer (Reliable, fast, no 403 blocks)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
-      maxZoom: 20,
-      subdomains: 'abcd',
+    // Esri WorldStreetMap tile layer (Reliable, high-res, zero API key required, no blocks)
+    L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}', {
+      attribution: '&copy; <a href="https://www.esri.com/">Esri</a>, OpenStreetMap contributors',
+      maxZoom: 18,
     }).addTo(map);
 
     // Modern Airbnb Coral Marker Pin
