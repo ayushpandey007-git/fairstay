@@ -55,7 +55,7 @@ main();
 async function main() {
   if (dbUrl.startsWith('mongodb+srv://') || dbUrl.includes('@')) {
     try {
-      await mongoose.connect(dbUrl, { serverSelectionTimeoutMS: 5000 });
+      await mongoose.connect(dbUrl, { dbName: 'FairStay', serverSelectionTimeoutMS: 5000 });
       console.log('✅ Connected to MongoDB Atlas Cloud successfully.');
       return;
     } catch (err) {
